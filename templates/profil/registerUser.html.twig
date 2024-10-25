@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="">
+{{ form_start(form) }}
+        {{ form_row(form.username) }}
+        {{ form_row(form.firstname) }}
+        {{ form_row(form.lastname) }}
+        {{ form_row(form.picture) }}
+        {{ form_row(form.password) }}
+        {{ form_row(form.save, { 'attr':  {'class': 'btn'}}) }}
+    {{ form_end(form) }}
+</div>
+
+{% endblock %}
