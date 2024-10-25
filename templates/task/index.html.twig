@@ -3,9 +3,17 @@
 
 
 {% block body %}
-
+<div class="">
+  <a href="{{ path('task_store') }}" class='btn'>New</a>
+</div>
     <ul>
 {% for todo in todos %}
+<div class="border my-4 ">
+  <h2>{{ todo.name}}</h2>
+  <p> {{ todo.describ}} </p>
+  <p>{{ todo.CreatedAt|date('Y-m-d H:i:s') }}</p>
+  <img src="{{ todo.picture}}" alt="">
+</div>
   <li>{{ todo.name}}</li>
 {% endfor %}
 </ul>
