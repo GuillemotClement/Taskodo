@@ -7,6 +7,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -31,12 +32,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Assert\Length(
+        min: 2,
+        minMessage: 'Le mot de passes est trop court',
+    )]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length(
+        min: 2,
+        max: 255,
+        minMessage: 'Le prénom est trop court',
+        maxMessage: 'Le prénom est trop long'
+    )]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length(
+        min: 2,
+        max: 255,
+        minMessage: 'Le nom est trop court',
+        maxMessage: 'Le nom est trop long'
+    )]
     private ?string $lastname = null;
 
     #[ORM\Column(length: 255, nullable: true)]

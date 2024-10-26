@@ -9,6 +9,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasher;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 class ProfilController extends AbstractController
@@ -22,16 +24,26 @@ class ProfilController extends AbstractController
     }
 
     #[Route('/register', name: 'register')]
-    public function registerUser(Request $req, EntityManagerInterface $em): Response
+    public function registerUser(Request $req, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher, ?User $user  = null): Response
     {
-        $user = new User();
+        //si user n'existe pas, alors création sinon c'est une édition
+        if (!$user) {
+            $user = new User();
+            $user->setCreatedAt(new \DateTime());
+        } else {
+            $user->setUpdateAt(new \DateTime());
+        }
 
         $form = $this->createForm(RegisterUserType::class, $user);
-
         $form->handleRequest($req);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user->setCreatedAt(new \DateTime());
+            // Hash du mot de passe
+            if ($user->getPassword()) {
+                $hashedPassword = $passwordHasher->hashPassword($user, $user->getPassword());
+                $user->setPassword($hashedPassword);
+            }
+
             $em->persist($user);
             $em->flush();
 
@@ -43,29 +55,3 @@ class ProfilController extends AbstractController
         ]);
     }
 }
-
-
-// #[Route('/tasks/store', name: 'task_store')]
-// public function store(Request $req, EntityManagerInterface $em): Response
-// {
-//     $task = new Todo();
-
-//     $form = $this->createForm(TaskType::class, $task);
-
-//     $form->handleRequest($req);
-
-//     if ($form->isSubmitted() && $form->isValid()) {
-//         $task->setCreatedAt(new \DateTimeImmutable());
-//         // si edition, alors on passe le dateTime lors de la soumission de l'edition
-//         // A modifier quand authentification sera mis en place
-//         $task->setAuthorId(1);
-//         $em->persist($task);
-//         $em->flush();
-//         // ajouter un message flash
-//         return $this->redirectToRoute('tasks_index');
-//     }
-
-//     return $this->render('task/store.html.twig', [
-//         'form' => $form,
-//     ]);
-// }
